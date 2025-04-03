@@ -4,6 +4,12 @@
 creating interlinear morpheme-by-morpheme glosses according to the [Leipzig
 glossing rules](https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf).
 
+This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/typst-leipzig-glossing) that adds some features:
+
+- [subexample customization](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
+- [left judges](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
+- independent subexample padding (`subex-padding`)
+
 # Documentation
 
 Run `typst compile documentation.typ` in the root of the repository to

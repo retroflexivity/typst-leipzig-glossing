@@ -8,7 +8,7 @@ This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/
 
 - [subexample customization](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
 - [left judges](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
-- independent subexample padding (`subex-padding`)
+- independent subexample padding (`sub-padding`)
 
 # Documentation
 

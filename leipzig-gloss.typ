@@ -123,6 +123,7 @@
     label-supplement: [example],
     gloss-padding: 2.5em, //TODO document these
     left-padding: 0.5em,
+    sub-padding: 0.5em,
     numbering: false,
     breakable: false,
     sub-num-pattern: "(a)",
@@ -148,7 +149,7 @@
                     stack(
                         dir: ltr, //TODO this needs to be more flexible
                         [#context count.display(sub-num-pattern)],
-                        left-padding,
+                        sub-padding,
                         gloss(..subexample-internal)
                     )
                 ) #if "label" in subexample {std.label(subexample.label)}

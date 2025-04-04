@@ -120,7 +120,7 @@
 
 #let example(
     label: none,
-    label-supplement: [example],
+    label-supplement: none,
     gloss-padding: 2.5em, //TODO document these
     left-padding: 0em,
     sub-padding: 1em,
@@ -145,7 +145,7 @@
                     kind: "subexample",
                     numbering: it => [#example-count.display()#count.display("a")],
                     outlined: false,
-                    supplement: it => {if "label-supplement" in subexample {return subexample.label-supplement} else {return "example"}},
+                    supplement: it => {if "label-supplement" in subexample {return subexample.label-supplement} else {return none}},
                     stack(
                         dir: ltr, //TODO this needs to be more flexible
                         [#context count.display(sub-num-pattern)],

@@ -126,7 +126,7 @@
     sub-padding: 1em,
     numbering: false,
     breakable: false,
-    sub-num-pattern: "(a)",
+    sub-num-pattern: "a.",
     ..args
 ) = {
     let add-subexample(subexample, count) = {

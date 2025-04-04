@@ -9,6 +9,10 @@ This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/
 - [subexample customization](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
 - [left judges](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
 - independent subexample padding (`sub-padding`)
+- smart refs with `ex-ref`
+  - `#ex-ref(<one>)` -> `(1)`
+  - `#ex-ref(<one>, <two>)` -> `(1-2)`
+  - `#ex-ref(left: "e.g. ", <onea>, <oneb>, right: " etc.")` -> `(e.g. 1a-b etc.)`
 
 # Documentation
 

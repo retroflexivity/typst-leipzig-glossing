@@ -122,8 +122,8 @@
     label: none,
     label-supplement: [example],
     gloss-padding: 2.5em, //TODO document these
-    left-padding: 0.5em,
-    sub-padding: 0.5em,
+    left-padding: 0em,
+    sub-padding: 1em,
     numbering: false,
     breakable: false,
     sub-num-pattern: "(a)",

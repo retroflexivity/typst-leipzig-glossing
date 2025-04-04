@@ -4,7 +4,7 @@
 creating interlinear morpheme-by-morpheme glosses according to the [Leipzig
 glossing rules](https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf).
 
-This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/typst-leipzig-glossing) that adds some features:
+This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/typst-leipzig-glossing) that adds some improvements:
 
 - [subexample customization](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
 - [left judges](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
@@ -13,6 +13,7 @@ This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/
   - `#ex-ref(<one>)` -> `(1)`
   - `#ex-ref(<one>, <two>)` -> `(1-2)`
   - `#ex-ref(left: "e.g. ", <onea>, <oneb>, right: " etc.")` -> `(e.g. 1a-b etc.)`
+- industry-standard defaults: paddings, subexample numbering, label supplements (none)
 
 # Documentation
 

@@ -197,3 +197,21 @@
 }
 
 #let numbered-example = example.with(numbering: true)
+
+
+
+// ╭─────────────╮
+// │ Referencing │
+// ╰─────────────╯
+
+#let ex-ref(left: none, right: none, ..args) = {
+  [(#left#ref(args.at(0))]
+  if args.pos().len() > 1 {
+    show regex("\d[a-z]+"): m => {
+      show regex("\d"): n => []
+      m
+    }
+    [\-#ref(args.at(1))]
+  }
+  [#right)]
+}

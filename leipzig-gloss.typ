@@ -126,6 +126,7 @@
     sub-padding: 1em,
     numbering: false,
     breakable: false,
+    num-pattern: "(1)",
     sub-num-pattern: "a.",
     ..args
 ) = {
@@ -162,7 +163,7 @@
     }
 
     let example-number = if numbering {
-        [(#context example-count.display())]
+        [#context example-count.display(num-pattern)]
     } else {
         none
     }

@@ -6,7 +6,7 @@ glossing rules](https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf).
 
 This is a fork of [neunenak/typst-leipzig-glossing](https://github.com/neunenak/typst-leipzig-glossing) that adds some improvements:
 
-- [subexample customization](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
+- [example numbering customization](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
 - [left judges](https://github.com/neunenak/typst-leipzig-glossing/pull/10)
 - independent subexample padding (`sub-padding`)
 - smart refs with `ex-ref`

@@ -211,8 +211,8 @@
   // second ref
   if args.pos().len() > 1 {
     // hide the digit part of a subexample ref
-    show regex("\d[a-z]+"): m => {
-      show regex("\d"): n => []
+    show regex("\d+[a-z]+"): m => {
+      show regex("\d+"): n => []
       m
     }
     [\-#ref(args.at(1))]

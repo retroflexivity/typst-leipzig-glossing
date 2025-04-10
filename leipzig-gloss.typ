@@ -212,8 +212,12 @@
 // ╰─────────────╯
 
 #let ex-ref(left: none, right: none, ..args) = {
-  [(#left#ref(args.at(0))]
+  // first ref
+  let fst = ref(args.at(0))
+  [(#left#fst]
+  // second ref
   if args.pos().len() > 1 {
+    // hide the digit part of a subexample ref
     show regex("\d[a-z]+"): m => {
       show regex("\d"): n => []
       m

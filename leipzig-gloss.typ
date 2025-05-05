@@ -1,115 +1,82 @@
 #import "abbreviations.typ"
 
+// ╭───────────────╮
+// │ Miscellaneous │
+// ╰───────────────╯
+
+#let left-judge(j) = [#context(h(-measure(j).width))#j]
+#let judge = left-judge
+
+#let sub-label(lbl) = {
+  metadata(label(lbl))
+}
+
+
 // ╭─────────────────────╮
 // │ Interlinear glosses │
 // ╰─────────────────────╯
 
-#let build-gloss(item-spacing, formatters, gloss-line-lists) = {
-    assert(gloss-line-lists.len() > 0, message: "Gloss line lists cannot be empty")
-
-    let len = gloss-line-lists.at(0).len()
-
-    for line in gloss-line-lists {
-        assert(line.len() == len)
-    }
-
-    assert(formatters.len() == gloss-line-lists.len(), message: "The number of formatters and the number of gloss line lists should be equal")
-
-    let make-item-box(..args) = {
-        box(stack(dir: ttb, spacing: 0.5em, ..args))
-    }
-
-    for item-index in range(0, len) {
-        let args = ()
-        for (line-idx, formatter) in formatters.enumerate() {
-            let formatter-fn = if formatter == none {
-                (x) => x
-            } else {
-                formatter
-            }
-
-            let item = gloss-line-lists.at(line-idx).at(item-index)
-            args.push(formatter-fn(item))
+#let build-gloss(lines, styles, word-spacing, line-spacing) = {
+    let make-word-box(..args) = {
+        context{
+          let spacing = line-spacing
+          if spacing == auto {
+            spacing = par.leading
+          }
+          box(stack(dir: ttb, spacing: spacing, ..args))
         }
-        make-item-box(..args)
-        h(item-spacing)
+    }
+
+    let len = lines.at(0).len()
+
+    for word-index in range(0, len) {
+        let args = ()
+        for (line, style) in lines.zip(styles) {
+            let word = line.at(word-index)
+            args.push(style(line.at(word-index)))
+        }
+        make-word-box(..args)
+        h(word-spacing)
     }
 }
 
-// Typesets the internal part of the interlinear glosses. This function does not deal with the external matters of numbering and labelling; which are handled by `example()`.
+
 #let gloss(
-  header: none,
-  header-style: none,
-  source: (),
-  source-style: none,
+  ..args,
   judge: none,
-  transliteration: none,
-  transliteration-style: none,
-  morphemes: none,
-  morphemes-style: none,
-  additional-lines: (), //List of list of content
-  translation: none,
-  translation-style: none,
-  item-spacing: 1em,
+  word-spacing: 1em,
+  line-spacing: auto,
+  after-spacing: auto,
+  styles: (),
 ) = {
-  assert(type(source) == array, message: "source needs to be an array; perhaps you forgot to type `(` and `)`, or a trailing comma?")
+  let lines = args.pos()
+  assert(lines.len() > 0, message: "at least one gloss line must be present")
+  let first-line = lines.at(0)
 
-  if morphemes != none {
-    assert(type(morphemes) == array, message: "morphemes needs to be an array; perhaps you forgot to type `(` and `)`, or a trailing comma?")
-    assert(source.len() == morphemes.len(), message: "source and morphemes have different lengths")
+  for line in lines {
+    assert(type(line) == array, message: "all gloss lines need to be arrays; perhaps you forgot to type `(` and `)`, or a trailing comma?")
+    assert(line.len() == first-line.len(), message: "all gloss lines need to be of equal lengths")
   }
 
-  if transliteration != none {
-    assert(transliteration.len() == source.len(), message: "source and transliteration have different lengths")
+  // fill missing styles with defaults
+  if styles.len() < lines.len() {
+    styles += (x => x,) * (lines.len() - styles.len())
   }
 
-  let gloss-items = {
-    if header != none {
-      if header-style != none {
-        header-style(header)
-      } else {
-        header
-      }
-      linebreak()
+  // prepend judge to the first word of the first line
+  let first-line = ([#left-judge(judge)#first-line.at(0)],) + first-line.slice(1)
+
+  context {
+    let after = after-spacing
+    if after == auto {
+      after = par.spacing
     }
-
-    let judge-width = measure(judge).width
-    let source-judge = ([#h(-judge-width)#judge#source.at(0)],) + source.slice(1) // prepend judge to the first word
-
-    let formatters = (source-style,)
-    let gloss-line-lists = (source-judge,)
-
-    if transliteration != none {
-      formatters.push(transliteration-style)
-      gloss-line-lists.push(transliteration)
-    }
-
-    if morphemes != none {
-      formatters.push(morphemes-style)
-      gloss-line-lists.push(morphemes)
-    }
-
-    for additional in additional-lines {
-      formatters.push(none) //TODO fix this
-      gloss-line-lists.push(additional)
-    }
-
-    build-gloss(item-spacing, formatters, gloss-line-lists)
-
-    if translation != none {
-      linebreak()
-
-      if translation-style == none {
-        translation
-      } else {
-        translation-style(translation)
-      }
-    }
+    par(
+      spacing: after,
+      build-gloss((first-line,) + lines.slice(1), styles, word-spacing, line-spacing)
+    )
   }
-
-  align(left)[#gloss-items]
 }
-
 
 
 // ╭─────────────────────╮
@@ -119,57 +86,83 @@
 #let example-count = counter("example-count")
 
 #let example(
+    content,
     label: none,
     label-supplement: none,
-    gloss-padding: 2.5em, //TODO document these
+    gloss-padding: 2.5em,
     left-padding: 0em,
     sub-padding: 1em,
-    numbering: false,
     breakable: false,
+    number: none,
     num-pattern: "(1)",
     sub-num-pattern: "a.",
-    ..args
 ) = {
-    let add-subexample(subexample, count) = {
-        // Remove parameters which are not used in the `gloss`.
-        // TODO Make this functional, if (or when) it’s possible in Typst: filter out `label` and `label-supplement` when they are passed below.
-        let subexample-internal = subexample
-        if "label" in subexample-internal {
-            let _ = subexample-internal.remove("label")
-        }
-        if "label-supplement" in subexample-internal {
-            let _ = subexample-internal.remove("label-supplement")
-        }
-        par()[
-            #box()[
-                #figure(
-                    kind: "subexample",
-                    numbering: it => [#example-count.display()#count.display("a")],
-                    outlined: false,
-                    supplement: it => {if "label-supplement" in subexample {return subexample.label-supplement} else {return none}},
-                    stack(
-                        dir: ltr, //TODO this needs to be more flexible
-                        [#context count.display(sub-num-pattern)],
-                        sub-padding,
-                        gloss(..subexample-internal)
-                    )
-                ) #if "label" in subexample {std.label(subexample.label)}
-            ]
-        ]
-    }
 
-    if numbering {
-        example-count.step()
-    }
-
-    let example-number = if numbering {
-        [#context example-count.display(num-pattern)]
+    // get-set numbering
+    let example-number = [#context example-count.display(num-pattern)]
+    if number != none {
+      // if custom number is sent
+      // override example number
+      // and skip it for counting
+      example-number = numbering(num-pattern, number)
     } else {
-        none
+      example-count.step()
+    }
+    
+    show figure.where(kind: "subexample"): it => {
+      // override auto centering in figures
+      set align(start)
+      it
+    }
+    
+    let add-subexample(
+      number,
+      example,
+      label: none
+    ) = {
+      [
+        #figure(
+          kind: "subexample",
+          numbering: it => [#example-count.display()#numbering("a", number)],
+          supplement: label-supplement,
+          outlined: false,
+          stack(
+            dir: ltr, //TODO this needs to be more flexible
+            [#numbering(sub-num-pattern, number)],
+            sub-padding,
+            [#example]
+          )
+        ) #if label != none {std.label(label)}
+      ]
+    }
+
+    let get-sub-label(item) = {
+      let body = item.body
+      let label
+      if "children" in body.fields() {
+        label = body.children.find(it => "value" in it.fields() and type(it.value) == std.label)
+      }
+      if label != none {
+        label = str(label.value)
+      }
+      return label
+    }
+
+    show figure.where(kind: "example"): it => {
+      // override auto centering in figures
+      set align(start)
+      // reassemble subexamples
+      show enum: it => {
+        for (i, item) in it.children.enumerate(start: 1) {
+          let label = get-sub-label(item) 
+          add-subexample(i, item.body, label: label)
+        }
+      }
+      it
     }
 
     context(
-      block(breakable: breakable)[
+      [
         #figure(
           kind: "example",
           numbering: it => [#example-count.display()],
@@ -179,32 +172,13 @@
             dir: ltr, //TODO this needs to be more flexible
             left-padding,
             [#example-number],
-            gloss-padding - left-padding - measure([#example-number]).width,
-            {
-              if args.pos().len() == 1 { // a simple example with no sub-examples
-                gloss(..arguments(..args.pos().at(0)))
-              }
-              else { // containing sub-examples
-                let subexample-count = counter("subexample-count")
-                subexample-count.update(0)
-                set align(left)
-                if "header" in args.named() {
-                  par[#args.named().header]
-                }
-                for subexample in args.pos() {
-                  subexample-count.step()
-                  add-subexample(subexample, subexample-count)
-                }
-              }
-            }
+            gloss-padding - left-padding, - measure([#example-number]).width,
+            content
           ),
         ) #if label != none {std.label(label)}
       ]
     )
 }
-
-#let numbered-example = example.with(numbering: true)
-
 
 
 // ╭─────────────╮

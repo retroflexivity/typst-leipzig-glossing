@@ -33,7 +33,7 @@
         let args = ()
         for (line, style) in lines.zip(styles) {
             let word = line.at(word-index)
-            args.push(style(line.at(word-index)))
+            args.push(style(word))
         }
         make-word-box(..args)
         h(word-spacing)
@@ -89,9 +89,9 @@
     content,
     label: none,
     label-supplement: none,
-    gloss-padding: 2.5em,
-    left-padding: 0em,
-    sub-padding: 1em,
+    indent: 0em,
+    body-indent: 2em,
+    sub-indent: 1.5em,
     breakable: false,
     number: none,
     num-pattern: "(1)",
@@ -126,10 +126,9 @@
           numbering: it => [#example-count.display()#numbering("a", number)],
           supplement: label-supplement,
           outlined: false,
-          stack(
-            dir: ltr, //TODO this needs to be more flexible
+          grid(
+            columns: (sub-indent, 1fr),
             [#numbering(sub-num-pattern, number)],
-            sub-padding,
             [#example]
           )
         ) #if label != none {std.label(label)}
@@ -151,6 +150,8 @@
     show figure.where(kind: "example"): it => {
       // override auto centering in figures
       set align(start)
+      // we don't want translations etc to indent
+      set par(first-line-indent: 0em)
       // reassemble subexamples
       show enum: it => {
         for (i, item) in it.children.enumerate(start: 1) {
@@ -168,13 +169,12 @@
           numbering: it => [#example-count.display()],
           outlined: false,
           supplement: label-supplement,
-          stack(
-            dir: ltr, //TODO this needs to be more flexible
-            left-padding,
-            [#example-number],
-            gloss-padding - left-padding, - measure([#example-number]).width,
+          grid(
+            columns: (indent, body-indent, 1fr),
+            [],
+            example-number,
             content
-          ),
+          )
         ) #if label != none {std.label(label)}
       ]
     )

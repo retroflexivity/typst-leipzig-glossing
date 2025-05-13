@@ -90,7 +90,7 @@
     label: none,
     label-supplement: none,
     indent: 0em,
-    body-indent: 2em,
+    body-indent: 2.5em,
     sub-indent: 1.5em,
     breakable: false,
     number: none,

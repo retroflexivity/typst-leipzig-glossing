@@ -23,7 +23,7 @@
           if spacing == auto {
             spacing = par.leading
           }
-          box(stack(dir: ttb, spacing: spacing, ..args))
+          box(grid(row-gutter: spacing, ..args))
         }
     }
 
